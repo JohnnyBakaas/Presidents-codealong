@@ -15,7 +15,7 @@
             YearFrom = Convert.ToInt32(yearFrom);
             if (parts.Length < 2)
             {
-                if(!years.Contains('-') && !years.Contains('–'))
+                if (!years.Contains('-') && !years.Contains('–'))
                 {
                     YearTo = YearFrom;
                 }
@@ -31,6 +31,12 @@
         {
             var yearTo = YearTo.ToString() ?? "";
             Console.WriteLine($"{Name} ({Party}) {YearFrom} - {yearTo}");
+        }
+
+        public void ShowWithoutParty()
+        {
+            var yearTo = YearTo.ToString() ?? "";
+            Console.WriteLine($"{Name} {YearFrom} - {yearTo}");
         }
     }
 }

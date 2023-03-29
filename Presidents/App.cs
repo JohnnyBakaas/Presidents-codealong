@@ -3,13 +3,118 @@
     internal class App
     {
         private President[] _presidents;
+        private List<Party> _partyes;
+
 
         public App()
         {
             _presidents = GetPresidents();
+            _partyes = GetPartyLists();
         }
 
-        public void Show()
+        private void PritnAlternativesForUser()
+        {
+            Console.WriteLine("Data om presidenter");
+            Console.WriteLine("Hva vil du vite?");
+            Console.WriteLine("----------------------------------");
+            Console.WriteLine("Trykk                          For");
+            Console.WriteLine("----------------------------------");
+            Console.WriteLine("1            Vis alle presidentene");
+            Console.WriteLine("2            List opp alle partier");
+            Console.WriteLine("3      Vis presidenter etter parti");
+            Console.WriteLine("4         Hvem var presiden i år X");
+            Console.WriteLine("X                             EXIT");
+            Console.WriteLine("----------------------------------");
+        }
+
+        private int GetUserInput()
+        {
+            PritnAlternativesForUser();
+            string userInput = Console.ReadLine();
+            if (userInput.ToUpper() == "X") return 0;
+            try
+            {
+                Console.Clear();
+                int userInputRefined = int.Parse(userInput);
+                if (userInputRefined > 4) int.Parse("Tall mellom 1 og 4");
+                return userInputRefined;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Venligst følg instruksjonene");
+                for (int i = 0; i < 6; i++)
+                {
+                    Console.Write(".");
+                    Thread.Sleep(500);
+                }
+                Console.Clear();
+                return GetUserInput();
+            }
+        }
+
+        public void Run()
+        {
+            bool exit = false;
+            int selectedAction = GetUserInput();
+            switch (selectedAction)
+            {
+                case 0:
+                    exit = true;
+                    break;
+                case 1:
+                    ShowAllPresidents();
+                    break;
+                case 2:
+                    ShowAllParys();
+                    break;
+                case 3:
+                    ShowAllPresidentsAfterPartys();
+                    break;
+                case 4:
+                    DisplayPresidentInSelectedYear();
+                    break;
+            }
+            if (!exit) Run();
+        }
+
+        private void DisplayPresidentInSelectedYear()
+        {
+            List<President> presidntsOfTheYear = GetPresidentInYear();
+            Console.WriteLine();
+            if (presidntsOfTheYear.Count != 1) Console.WriteLine("Dette var ett overgangs år, så både");
+
+            for (int i = 0; i < presidntsOfTheYear.Count; i++)
+            {
+                if (i != 0) Console.WriteLine("og");
+                presidntsOfTheYear[i].Show();
+            }
+
+            Console.WriteLine("Var president dette året");
+            Console.WriteLine();
+        }
+
+        private void ShowAllPresidentsAfterPartys()
+        {
+            foreach (var party in _partyes)
+            {
+                Console.WriteLine(party.Name);
+                foreach (var pres in party.Presidents)
+                {
+                    pres.ShowWithoutParty();
+                }
+            }
+        }
+
+        private void ShowAllParys()
+        {
+            foreach (var party in _partyes)
+            {
+                Console.WriteLine(party.Name);
+            }
+        }
+
+        private void ShowAllPresidents()
         {
             foreach (var president in _presidents)
             {
@@ -17,41 +122,52 @@
             }
         }
 
-        public List<President> getPresidentInYear()
+        private List<President> GetPresidentInYear()
         {
+            Console.WriteLine("Skriv inn ett år du lurer på");
             string userInput = Console.ReadLine();
-            // legg til ting som gjør at det ikke kræsjer XD
 
-            int yearFromUser = int.Parse(userInput);
-
-            List<President> presidentene = new List<President>();
-            for (int i = 0; i < _presidents.Length; i++)
+            try
             {
-                if (_presidents[i].YearFrom <= yearFromUser && _presidents[i].YearTo >= yearFromUser)
-                { presidentene.Add(_presidents[i]); }
+                int yearFromUser = int.Parse(userInput);
+
+                List<President> presidentene = new List<President>();
+
+                for (int i = 0; i < _presidents.Length; i++)
+                {
+                    if (_presidents[i].YearFrom <= yearFromUser && _presidents[i].YearTo >= yearFromUser)
+                    { presidentene.Add(_presidents[i]); }
+                }
+                return presidentene;
             }
-            return presidentene;
+            catch
+            {
+                Console.WriteLine("Dette med instruksjoner da");
+                Thread.Sleep(1000);
+                return GetPresidentInYear();
+            }
         }
 
-        public void showThePatys()
+        private List<Party> GetPartyLists()
         {
             List<Party> partys = new List<Party>();
             foreach (var president in _presidents)
             {
-                var party = getParty(partys, president.Party);
+                var party = GetParty(partys, president.Party);
                 party.Presidents.Add(president);
             }
-            foreach (var party in partys) { Console.WriteLine(party.Name); }
+            return partys;
         }
 
-        private Party getParty(List<Party> partys, string partyName)
+        private Party GetParty(List<Party> partys, string partyName)
         {
             for (int i = 0; i < partys.Count; i++)
             {
-                if (partys[i].Name == partyName) { return partys[i]; }
+                if (partys[i].Name == partyName) return partys[i];
             }
-            partys.Add(new Party(partyName));
-            return partys[partys.Count - 1];
+            Party newParty = new Party(partyName);
+            partys.Add(newParty);
+            return newParty;
         }
 
         private static President[] GetPresidents()
