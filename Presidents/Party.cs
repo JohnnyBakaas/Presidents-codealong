@@ -1,6 +1,6 @@
 ﻿namespace Presidents
 {
-    internal class Party
+    public class Party
     {
         public string Name;
         public List<President> Presidents;

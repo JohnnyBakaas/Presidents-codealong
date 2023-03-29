@@ -1,15 +1,14 @@
 ﻿namespace Presidents
 {
-    internal class App
+    public class App
     {
         private President[] _presidents;
-        private List<Party> _partyes;
 
 
         public App()
         {
             _presidents = GetPresidents();
-            _partyes = GetPartyLists();
+
         }
 
         private void PritnAlternativesForUser()
@@ -55,6 +54,7 @@
 
         public void Run()
         {
+            PartyCollection partyes = new PartyCollection(_presidents);
             bool exit = false;
             int selectedAction = GetUserInput();
             switch (selectedAction)
@@ -66,10 +66,10 @@
                     ShowAllPresidents();
                     break;
                 case 2:
-                    ShowAllParys();
+                    partyes.ShowPartys();
                     break;
                 case 3:
-                    ShowAllPresidentsAfterPartys();
+                    partyes.ShowPresidents();
                     break;
                 case 4:
                     DisplayPresidentInSelectedYear();
@@ -92,26 +92,6 @@
 
             Console.WriteLine("Var president dette året");
             Console.WriteLine();
-        }
-
-        private void ShowAllPresidentsAfterPartys()
-        {
-            foreach (var party in _partyes)
-            {
-                Console.WriteLine(party.Name);
-                foreach (var pres in party.Presidents)
-                {
-                    pres.ShowWithoutParty();
-                }
-            }
-        }
-
-        private void ShowAllParys()
-        {
-            foreach (var party in _partyes)
-            {
-                Console.WriteLine(party.Name);
-            }
         }
 
         private void ShowAllPresidents()
@@ -146,28 +126,6 @@
                 Thread.Sleep(1000);
                 return GetPresidentInYear();
             }
-        }
-
-        private List<Party> GetPartyLists()
-        {
-            List<Party> partys = new List<Party>();
-            foreach (var president in _presidents)
-            {
-                var party = GetParty(partys, president.Party);
-                party.Presidents.Add(president);
-            }
-            return partys;
-        }
-
-        private Party GetParty(List<Party> partys, string partyName)
-        {
-            for (int i = 0; i < partys.Count; i++)
-            {
-                if (partys[i].Name == partyName) return partys[i];
-            }
-            Party newParty = new Party(partyName);
-            partys.Add(newParty);
-            return newParty;
         }
 
         private static President[] GetPresidents()
